@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Converter</title>
+    <style>
+        :root{ font-size: 1.2em; font-family: Arial, Helvetica, sans-serif }
+        input{
+            padding: 0.2em;
+            font-size: 1em;
+            border-style: solid;
+            border-color: lightgray;
+            border-width: 2px;
+            outline-style: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent
+        }
+        span{ display: inline-block }
+        button{
+            margin-top: 5px;
+            width: 5em;
+            padding: 0.5em;
+            border-style: solid;
+            border-color: black;
+            background-color: white;
+        }
+        button:active{ background-color: gray }
+        button:disabled{
+            color: lightgray;
+            border-color: lightgray;
+        }
+        .con1{
+            margin-top: 1em;
+            margin-bottom: 1em;
+            margin-left: 10em;
+            margin-right: 10em;
+            border-style: solid;
+            border-width: 3px;
+            box-shadow: 4px 4px 0px black;
+        }
+        .con2{
+            margin: 0px;
+            padding: 0px;
+        }
+        .con3{
+            display: inline-block;
+            padding: 1em;
+            margin: 1em;
+            border-style: solid;
+            border-width: 3px;
+            box-shadow: 4px 4px 0px black;
+        }
+        .con4{
+            display: inline-block;
+            padding: 1em;
+            margin: 1em;
+            border-left-style: solid;
+            border-width: 3px;
+        }
+        @media (max-width: 1110px){
+            .con1{
+                margin-top: 1em;
+                margin-bottom: 1em;
+                margin-left: 5em;
+                margin-right: 5em;
+            }
+        }
+        @media (max-width: 940px){
+            .con1{
+                margin-top: 1em;
+                margin-bottom: 1em;
+                margin-left: 3em;
+                margin-right: 3em;
+            }
+        }
+        @media (max-width: 464px){
+            :root{font-size: 1em;}
+            .con1{
+                margin-top: 0.5em;
+                margin-bottom: 0.5em;
+                margin-left: 0.5em;
+                margin-right: 0.5em;
+            }
+        }
+        @media (max-width: 490px){
+            #btn{width: 4em}
+        }
+    </style>
+</head>
+<body>
+    <div class="con1">
+        <div class="con4">
+            <h1 style="margin: 0; line-height: 100%;">Base Converter<br><span style="font-size:medium">32 Bit</span></h1>
+            <br>
+            <h6 style="margin: 0;">&copy; Ims4d<br>Published under CC0 v1.0 license<br><a href="https://github.com/Ims4d/PABCL2024">See the source code</a></h6>
+        </div>
+        <div class="con2">
+            <div class="con3">
+                <h3 style="margin-top: 0px">Output</h3>
+                <span>Binary &#40;0-1&#41;</span><br>
+                <input type="text" id="select-out" readonly>
+                <br>
+                <span style="margin-top: 1em;">Octal &#40;0-7&#41;</span><br>
+                <input type="text" id="select-out" readonly>
+                <br>
+                <span style="margin-top: 1em;">Decimal &#40;0-9&#41;</span><br>
+                <input type="text" id="select-out" readonly>
+                <br>
+                <span style="margin-top: 1em;">Hexadecimal &#40;0-F&#41;</span><br>
+                <input type="text" id="select-out" readonly>
+            </div>
+            <div class="con3">
+                <h3 style="margin-top: 0px">Input</h3>
+                <button id="btn" onclick="handleInput('0')">0</button>
+                <button id="btn" onclick="handleInput('1')">1</button>
+                <button id="btn" onclick="handleInput('2')" disabled>2</button>
+                <button id="btn" onclick="handleInput('3')" disabled>3</button>
+                <br>
+                <button id="btn" onclick="handleInput('4')" disabled>4</button>
+                <button id="btn" onclick="handleInput('5')" disabled>5</button>
+                <button id="btn" onclick="handleInput('6')" disabled>6</button>
+                <button id="btn" onclick="handleInput('7')" disabled>7</button>
+                <br>
+                <button id="btn" onclick="handleInput('8')" disabled>8</button>
+                <button id="btn" onclick="handleInput('9')" disabled>9</button>
+                <button id="btn" onclick="handleInput('A')" disabled>A</button>
+                <button id="btn" onclick="handleInput('B')" disabled>B</button>
+                <br>
+                <button id="btn" onclick="handleInput('C')" disabled>C</button>
+                <button id="btn" onclick="handleInput('D')" disabled>D</button>
+                <button id="btn" onclick="handleInput('E')" disabled>E</button>
+                <button id="btn" onclick="handleInput('F')" disabled>F</button>
+                <br>
+                <button onclick="handleDel()">Delete</button>
+                <button onclick="handleClr()">Clear</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const outElem = document.querySelectorAll('input#select-out');
+        const btmElem = document.querySelectorAll('button#btn');
+
+        // set wanra border untuk output biner ketika pertama kali muat
+        outElem[0].style.borderColor = 'black';
+
+        let selectOut = 0;
+        let inputValue = [];
+
+        // iterasi semua elemen output
+        outElem.forEach((elm1, idx1) => {
+            // inisialisasi nilai output pertama kali muat
+            elm1.value = '0';
+            // pemilihan output diambil dari event onclick elemennya
+            elm1.onclick = function(){
+                // hapus semua atribut disabled pada tombol input setiap kali ada perubahan pada output
+                btmElem.forEach(elm => elm.removeAttribute('disabled'));
+                // set warna border untuk semua elemen output ketika terjadi perubahan output
+                outElem.forEach(elm => elm.style.borderColor = 'lightgray');
+
+                // set warna border untuk elemen output yang sedang diklik
+                outElem[idx1].style.borderColor = 'black';
+
+                // isi inputValue dengan array dari elemen output yang sedang diklik
+                inputValue = outElem[idx1].value.split('');
+                selectOut = idx1;
+
+                // seleksi tombol input yang akan di-disabled ketika terjadi perubahan output
+                if(idx1 === 0){
+                    btmElem.forEach((elm, idx) => {
+                        if(idx > 1) elm.setAttribute('disabled', '');
+                    })
+                } else if(idx1 === 1){
+                    btmElem.forEach((elm, idx) => {
+                        if(idx > 7) elm.setAttribute('disabled', '');
+                    })
+                } else if(idx1 === 2){
+                    btmElem.forEach((elm, idx) => {
+                        if(idx > 9) elm.setAttribute('disabled', '');
+                    })
+                }
+            }
+        })
+
+        function handleInput(valueStr){
+            // cek apakah pajang string dari output biner masih kurang dari 32
+            // dan juga cek nilai yang pertama diisi ke inputValue agar tidak diawali dengan angka 0
+            if(outElem[0].value.length < 32 && !(inputValue.length < 1 && valueStr === '0')){
+                inputValue.push(valueStr);
+            }
+            calcConversion(inputValue.join(''));
+        }
+
+        function handleDel(){
+            inputValue.pop();
+            calcConversion(inputValue.join(''));
+        }
+
+        function handleClr(){
+            inputValue = [];
+            calcConversion('0');
+        }
+
+        function calcConversion(inValueStr){
+            let decimal = 0;
+            if(selectOut === 1){
+                // tambahkan '0o' pada awal string sehingga mengindikasikan bilangan oktal dan konversi menjadi angka (number) desimal menggunakan fungsi bawaan 'eval()'
+                decimal = eval('0o' + (inValueStr || '0'));
+            } else if(selectOut === 2){
+                // konversi string ke tipe number
+                decimal = Number(inValueStr || '0');
+            } else if(selectOut === 3){
+                // tambah '0x' pada awal string sehingga mengindikasikan bilangan hexadesimal dan konversi menjadi angka (number) desimal
+                decimal = eval('0x' + (inValueStr || '0'));
+            } else {
+                // tambah '0b' pada awal string sehingga mengindikasikan bilangan biner lalu konversi menjadi angka (number) desimal
+                decimal = eval('0b' + (inValueStr || '0'));
+            }
+
+            // tampilkan output dari nilai desimal ke biner
+            outElem[0].value = decimal.toString(2);
+            // tampilkan output dari nilai desimal ke oktal
+            outElem[1].value = decimal.toString(8);
+            outElem[2].value = decimal;
+            //tampilkan output dari nilai desimal ke hexadesimal
+            outElem[3].value = decimal.toString(16).toUpperCase();
+        }
+    </script>
+</body>
+</html>
